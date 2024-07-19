@@ -12,8 +12,8 @@ public class Graph : MonoBehaviour {
 	[SerializeField, Range(10, 100)]
 	int resolution = 10; //how many dots are being used to represent the graph
 
-	[SerializeField, Range(0, 3)]
-	int function; //which functions to use and visualize the graph
+	[SerializeField]
+	FunctionLibrary.FunctionName function; //which functions to use and visualize the graph
 	
     
 	void Awake () {

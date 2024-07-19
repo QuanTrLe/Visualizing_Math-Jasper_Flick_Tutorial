@@ -27,24 +27,17 @@ public static class FunctionLibrary
 
 		float y = Sin(PI * (4f * d - t));
 
-		return y / (1f + 10f * d);
+		return y / (1f + 10f * d); //to reduce the amplitude so that it does not go off screen
 	}
 
-	public delegate float Function (float x, float t);
+	public delegate float Function (float x, float t); //a normalized type of function for the delegate function to get others
 
-	public static Function GetFunction(int index)
+	public enum FunctionName { Wave, MultiWave, Ripple } //enum for names of the functions
+
+	static Function[] functions = { Wave, MultiWave, Ripple }; //list for the actual functions
+
+	public static Function GetFunction(FunctionName name) //for other classes to get the functions
 	{
-		if (index == 0)
-		{
-			return Wave;
-		}
-		else if (index == 1)
-		{
-			return MultiWave;
-		}
-		else
-		{
-			return Ripple;
-		}
+		return functions[(int)name]; //cast bc enum cant implicitly cast to int
 	}
 }
