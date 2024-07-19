@@ -4,12 +4,12 @@ using static UnityEngine.Mathf;
 
 public static class FunctionLibrary
 {
-	public static float Wave(float x, float t)
+	public static float Wave(float x, float z, float t)
 	{
 		return Sin(PI * (x + t)); //sin wave formula
 	}
 
-	public static float MultiWave(float x, float t)
+	public static float MultiWave(float x, float z, float t)
 	{
 		float y = Sin(PI * (x + 0.5f * t)); // the normal sin wave
 
@@ -22,7 +22,7 @@ public static class FunctionLibrary
 		return y;
 	}
 
-	public static float Ripple (float x, float t) {
+	public static float Ripple (float x, float z, float t) {
 		float d = Abs(x);
 
 		float y = Sin(PI * (4f * d - t));
@@ -30,7 +30,7 @@ public static class FunctionLibrary
 		return y / (1f + 10f * d); //to reduce the amplitude so that it does not go off screen
 	}
 
-	public delegate float Function (float x, float t); //a normalized type of function for the delegate function to get others
+	public delegate float Function (float x, float z, float t); //a normalized type of function for the delegate function to get others
 
 	public enum FunctionName { Wave, MultiWave, Ripple } //enum for names of the functions
 
