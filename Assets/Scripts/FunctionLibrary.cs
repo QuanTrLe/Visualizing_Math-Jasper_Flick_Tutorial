@@ -11,7 +11,7 @@ public static class FunctionLibrary
 
 	public static float MultiWave(float x, float t)
 	{
-		float y = Sin(PI * (x + t)); // the normal sin wave
+		float y = Sin(PI * (x + 0.5f * t)); // the normal sin wave
 
 		//constant * for performance
 		//to add more complexity to the wave
@@ -20,5 +20,31 @@ public static class FunctionLibrary
 		y = y * (2f / 3f); //due to the higher frequence, the range is now -1.5 x 1.5. Make it -1 x 1
 
 		return y;
+	}
+
+	public static float Ripple (float x, float t) {
+		float d = Abs(x);
+
+		float y = Sin(PI * (4f * d - t));
+
+		return y / (1f + 10f * d);
+	}
+
+	public delegate float Function (float x, float t);
+
+	public static Function GetFunction(int index)
+	{
+		if (index == 0)
+		{
+			return Wave;
+		}
+		else if (index == 1)
+		{
+			return MultiWave;
+		}
+		else
+		{
+			return Ripple;
+		}
 	}
 }

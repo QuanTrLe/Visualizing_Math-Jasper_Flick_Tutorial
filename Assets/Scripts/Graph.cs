@@ -10,7 +10,10 @@ public class Graph : MonoBehaviour {
 	Transform[] points; //all the dots beign used
 
 	[SerializeField, Range(10, 100)]
-	int resolution = 10; //how many dots are being used to represent the curve
+	int resolution = 10; //how many dots are being used to represent the graph
+
+	[SerializeField, Range(0, 3)]
+	int function; //which functions to use and visualize the graph
 	
     
 	void Awake () {
@@ -33,6 +36,7 @@ public class Graph : MonoBehaviour {
 
 	void Update()
 	{
+		FunctionLibrary.Function f = FunctionLibrary.GetFunction(function); //which function to use to graph
 		float time = Time.time; //for sin wave function and avoid redundancy in loop
 
 		for (int i = 0; i < points.Length; i++)
@@ -40,7 +44,7 @@ public class Graph : MonoBehaviour {
 			Transform point = points[i];
 			Vector3 position = point.localPosition; 
 
-			position.y = FunctionLibrary.MultiWave(position.x, time);
+			position.y = f(position.x, time);
 			point.localPosition = position;
 		}
 	}
