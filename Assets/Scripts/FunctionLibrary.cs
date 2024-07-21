@@ -4,34 +4,52 @@ using static UnityEngine.Mathf;
 
 public static class FunctionLibrary
 {
-	public static float Wave(float x, float z, float t)
+	public static Vector3 Wave(float u, float v, float t)
 	{
-		return Sin(PI * (x + z + t)); //sin wave formula
+		Vector3 p;
+
+		p.x = u;
+		p.y = Sin(PI * (u + v + t));
+		p.z = v;
+
+		return p; //sin wave formula
 	}
 
-	public static float MultiWave(float x, float z, float t)
+	public static Vector3 MultiWave(float u, float v, float t)
 	{
-		float y = Sin(PI * (x + 0.5f * t)); // the normal sin wave
+		Vector3 p;
+
+		p.x = u;
 
 		//constant * for performance
 		//to add more complexity to the wave
-		y += Sin(2f * PI * (z + t)) * 0.5f;
-		y += Sin(PI * (x + z + 0.25f * t));
+		p.y = Sin(PI * (u + 0.5f * t)); // the normal sin wave
+		p.y += Sin(2f * PI * (v + t)) * 0.5f; //to add on a wave independent for the z dimension
+		p.y += Sin(PI * (u + v + 0.25f * t));
+		p.y = p.y * (1f / 2.5f); //due to the higher frequence, the range is now -2.5 x 2.5. Make it -1 x 1
 
-		y = y * (1f / 2.5f); //due to the higher frequence, the range is now -1.5 x 1.5. Make it -1 x 1
+		p.z = v;
 
-		return y;
+		return p;
 	}
 
-	public static float Ripple (float x, float z, float t) {
-		float d = Sqrt(x * x + z * z);
+	public static Vector3 Ripple (float u, float v, float t) {
+		//old equation float d = Abs(x);
+		float d = Sqrt(u * u + v * v);
+		Vector3 p;
 
-		float y = Sin(PI * (4f * d - t));
+		p.x = u;
 
-		return y / (1f + 10f * d); //to reduce the amplitude so that it does not go off screen
+		p.y = Sin(PI * (4f * d - t));
+		p.y = p.y / (1f + 10f * d); //to reduce the amplitude so that it does not go off screen 
+
+		p.z = v;
+
+		return p; //to reduce the amplitude so that it does not go off screen
 	}
 
-	public delegate float Function (float x, float z, float t); //a normalized type of function for the delegate function to get others
+	//a override function for the delegate function to get others
+	public delegate Vector3 Function (float u, float v, float t);
 
 	public enum FunctionName { Wave, MultiWave, Ripple } //enum for names of the functions
 

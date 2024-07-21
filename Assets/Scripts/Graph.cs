@@ -45,14 +45,20 @@ public class Graph : MonoBehaviour {
 	{
 		FunctionLibrary.Function f = FunctionLibrary.GetFunction(function); //which function to use to graph
 		float time = Time.time; //for sin wave function and avoid redundancy in loop
+		float step = 2f / resolution;
 
-		for (int i = 0; i < points.Length; i++)
+		for (int i = 0, x = 0, z = 0; i < points.Length; i++, x++)
 		{
-			Transform point = points[i];
-			Vector3 position = point.localPosition; 
+			if (x == resolution)
+			{
+				x = 0;
+				z += 1;
+			}
 
-			position.y = f(position.x, position.z, time);
-			point.localPosition = position;
+			float u = (x + 0.5f) * step - 1f;
+			float v = (z + 0.5f) * step - 1f;
+
+			points[i].localPosition = f(u, v, time);
 		}
 	}
 }
