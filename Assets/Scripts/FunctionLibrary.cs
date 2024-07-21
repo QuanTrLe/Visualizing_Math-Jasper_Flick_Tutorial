@@ -62,12 +62,27 @@ public static class FunctionLibrary
 		return p;
 	}
 
+	public static Vector3 Torus(float u, float v, float t)
+	{
+		Vector3 p;
+
+		float r1 = 0.75f; //the major radius, radius of the whole thing
+		float r2 = 0.25f; //the minor radius, radius of the minor circle/sphere
+		float s = r1 + r2 * Cos(PI * v);
+
+		p.x = s * Sin(PI * u);
+		p.y = r2 * Sin(PI * v);
+		p.z = s * Cos(PI * u);
+
+		return p;
+	}
+
 	//a override function for the delegate function to get others
 	public delegate Vector3 Function (float u, float v, float t);
 
-	public enum FunctionName { Wave, MultiWave, Ripple, Sphere } //enum for names of the functions
+	public enum FunctionName { Wave, MultiWave, Ripple, Sphere, Torus } //enum for names of the functions
 
-	static Function[] functions = { Wave, MultiWave, Ripple, Sphere }; //list for the actual functions
+	static Function[] functions = { Wave, MultiWave, Ripple, Sphere, Torus }; //list for the actual functions
 
 	public static Function GetFunction(FunctionName name) //for other classes to get the functions
 	{
