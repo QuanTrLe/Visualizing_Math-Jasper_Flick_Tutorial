@@ -17,35 +17,26 @@ public class Graph : MonoBehaviour {
 	
     
 	void Awake () {
-        var position = Vector3.zero;
         float step = 2f / resolution;
 		var scale = Vector3.one * step;
 
 		points = new Transform[resolution * resolution];
 
-		for (int i = 0, x = 0, z = 0; i < points.Length; i++, x++) {
-			if (x == resolution)
-			{
-				x = 0;
-				z += 1;
-			}
-
+		for (int i = 0; i < points.Length; i++) {
 			Transform point = points[i] = Instantiate(pointPrefab);
-            point.SetParent(transform, false); //for organization put it under Graph node
-
-			position.x = (x + 0.5f) * step - 1f; //to set it in the right position in the midle of screen
-			position.z = (z + 0.5f) * step - 1f; //same as above but for the z coordinate
-
-			point.localPosition = position;
 			point.localScale = scale;
+			point.SetParent(transform, false); //for organization put it under Graph node
 		}
 	}
 
 	void Update()
 	{
 		FunctionLibrary.Function f = FunctionLibrary.GetFunction(function); //which function to use to graph
+
 		float time = Time.time; //for sin wave function and avoid redundancy in loop
 		float step = 2f / resolution;
+		
+		float v = 0.5f * step - 1f;
 
 		for (int i = 0, x = 0, z = 0; i < points.Length; i++, x++)
 		{
@@ -53,10 +44,10 @@ public class Graph : MonoBehaviour {
 			{
 				x = 0;
 				z += 1;
+				v = (z + 0.5f) * step - 1f;
 			}
 
 			float u = (x + 0.5f) * step - 1f;
-			float v = (z + 0.5f) * step - 1f;
 
 			points[i].localPosition = f(u, v, time);
 		}
