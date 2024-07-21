@@ -6,7 +6,7 @@ public static class FunctionLibrary
 {
 	public static float Wave(float x, float z, float t)
 	{
-		return Sin(PI * (x + t)); //sin wave formula
+		return Sin(PI * (x + z + t)); //sin wave formula
 	}
 
 	public static float MultiWave(float x, float z, float t)
@@ -15,15 +15,16 @@ public static class FunctionLibrary
 
 		//constant * for performance
 		//to add more complexity to the wave
-		y += Sin(2f * PI * (x + t)) * 0.5f;
+		y += Sin(2f * PI * (z + t)) * 0.5f;
+		y += Sin(PI * (x + z + 0.25f * t));
 
-		y = y * (2f / 3f); //due to the higher frequence, the range is now -1.5 x 1.5. Make it -1 x 1
+		y = y * (1f / 2.5f); //due to the higher frequence, the range is now -1.5 x 1.5. Make it -1 x 1
 
 		return y;
 	}
 
 	public static float Ripple (float x, float z, float t) {
-		float d = Abs(x);
+		float d = Sqrt(x * x + z * z);
 
 		float y = Sin(PI * (4f * d - t));
 
