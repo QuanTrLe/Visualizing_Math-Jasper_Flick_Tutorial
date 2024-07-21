@@ -48,12 +48,25 @@ public static class FunctionLibrary
 		return p; //to reduce the amplitude so that it does not go off screen
 	}
 
+	public static Vector3 Sphere(float u, float v, float t)
+	{
+		Vector3 p;
+
+		float r = Cos(0.5f * PI * v);
+
+		p.x = r * Sin(PI * u);
+		p.y = Sin(0.5f * PI * v);
+		p.z = r * Cos(PI * u);
+
+		return p;
+	}
+
 	//a override function for the delegate function to get others
 	public delegate Vector3 Function (float u, float v, float t);
 
-	public enum FunctionName { Wave, MultiWave, Ripple } //enum for names of the functions
+	public enum FunctionName { Wave, MultiWave, Ripple, Sphere } //enum for names of the functions
 
-	static Function[] functions = { Wave, MultiWave, Ripple }; //list for the actual functions
+	static Function[] functions = { Wave, MultiWave, Ripple, Sphere }; //list for the actual functions
 
 	public static Function GetFunction(FunctionName name) //for other classes to get the functions
 	{
