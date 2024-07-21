@@ -52,11 +52,12 @@ public static class FunctionLibrary
 	{
 		Vector3 p;
 
-		float r = Cos(0.5f * PI * v);
+		float r = 0.9f + 0.1f * Sin(PI * (6f * u + 4f * v + t));
+		float s = r * Cos(0.5f * PI * v);
 
-		p.x = r * Sin(PI * u);
-		p.y = Sin(0.5f * PI * v);
-		p.z = r * Cos(PI * u);
+		p.x = s * Sin(PI * u);
+		p.y = r * Sin(0.5f * PI * v);
+		p.z = s * Cos(PI * u);
 
 		return p;
 	}
