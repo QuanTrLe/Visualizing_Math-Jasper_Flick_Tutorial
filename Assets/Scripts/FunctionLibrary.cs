@@ -66,8 +66,8 @@ public static class FunctionLibrary
 	{
 		Vector3 p;
 
-		float r1 = 0.7f + 0.1f * Sin(PI * (6f * u + 0.5f * t)); //the major radius, radius of the whole thing
-		float r2 = 0.15f + 0.05f * Sin(PI * (8f * u + 4f * v + 2f * t)); //the minor radius, radius of the minor circle/sphere
+		float r1 = 1f + 0.1f * Sin(PI * (6f * u + 0.5f * t)); //the major radius, radius of the whole thing
+		float r2 = 0.35f + 0.05f * Sin(PI * (8f * u + 4f * v + 2f * t)); //the minor radius, radius of the minor circle/sphere
 		float s = r1 + r2 * Cos(PI * v);
 
 		p.x = s * Sin(PI * u);
