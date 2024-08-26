@@ -9,7 +9,7 @@ public class Graph : MonoBehaviour {
 
 	Transform[] points; //all the dots beign used
 
-	[SerializeField, Range(10, 100)]
+	[SerializeField, Range(10, 200)]
 	int resolution = 10; //how many dots are being used to represent the graph
 
 	[SerializeField]
