@@ -13,7 +13,7 @@ public class GPUGraph : MonoBehaviour {
 	[SerializeField]
 	Mesh mesh;
 
-	[SerializeField, Range(10, 200)]
+	[SerializeField, Range(10, 1000)]
 	int resolution = 10; //how many dots are being used to represent the graph
 
 	[SerializeField]
