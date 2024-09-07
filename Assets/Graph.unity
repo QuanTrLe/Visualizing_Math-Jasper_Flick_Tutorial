@@ -375,8 +375,8 @@ MonoBehaviour:
   mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   resolution: 1000
   function: 4
-  functionDuration: 1
-  transitionDuration: 0
+  functionDuration: 3
+  transitionDuration: 3
   transitionMode: 0
 --- !u!4 &611101221
 Transform:

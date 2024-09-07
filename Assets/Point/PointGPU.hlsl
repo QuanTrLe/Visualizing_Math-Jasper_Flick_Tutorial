@@ -1,3 +1,6 @@
+//for commented versions of the graph functions, go to FunctionLibrary.cs
+//this is for use in junction with the Point Surface GPU shader
+
 #if defined(UNITY_PROCEDURAL_INSTANCING_ENABLED)
 	StructuredBuffer<float3> _Positions;
 #endif
