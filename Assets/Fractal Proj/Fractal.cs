@@ -24,13 +24,44 @@ public class Fractal : MonoBehaviour {
 		Quaternion.Euler(90f, 0f, 0f), Quaternion.Euler(-90f, 0f, 0f)
 	};
 
+    //for keeping track of all the fractal parts
+    struct FractalPart {
+		public Vector3 direction;
+		public Quaternion rotation;
+        public Transform transform;
+	}
+    FractalPart[][] parts; //2D array for each depth level parts 
+
+
     void Awake () {
-		CreatePart();
+        parts = new FractalPart[depth][];
+        parts[0] = new FractalPart[1]; //because the root level only has one part (the major guy in the middle)
+
+        //populating the rest of the array with the FractalPar structs
+        for (int i = 0, length = 1; i < parts.Length; i++, length *= 5) {
+            parts[i] = new FractalPart[length];
+        }
+
+        //creating the parts themselves
+		CreatePart(0, 0);
+
+        float scale = 1f;
+        for (int levelIndex = 1; levelIndex < parts.Length; levelIndex++) { //start at one cus we already created the first one
+            scale *= 0.5f;
+            FractalPart[] levelParts = parts[levelIndex];
+
+            for (int fractalPartIndex = 0; fractalPartIndex < levelParts.Length; fractalPartIndex += 5) {
+                for (int childIndex = 0; childIndex < 5; childIndex++) {
+                    CreatePart(levelIndex, childIndex, scale);
+                }
+            }
+        }
 	}
 
-    void CreatePart() {
-        var go = new GameObject("Fractal Part"); //go short for gameObject
-		go.transform.SetParent(transform, false);
+    void CreatePart(int levelIndex, int childIndex, float scale) {
+        var go = new GameObject("Fractal Part L" + levelIndex + " C" + childIndex); //go short for gameObject
+		go.transform.localScale = scale * Vector3.one;
+        go.transform.SetParent(transform, false);
         go.AddComponent<MeshFilter>().mesh = mesh;
 		go.AddComponent<MeshRenderer>().material = material;
     }
