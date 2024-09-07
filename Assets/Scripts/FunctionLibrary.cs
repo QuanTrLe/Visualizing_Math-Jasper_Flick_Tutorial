@@ -4,13 +4,14 @@ using static UnityEngine.Mathf;
 
 public static class FunctionLibrary
 {
-	public static FunctionName GetNextFunctionName (FunctionName name) {
-		if ((int)name < functions.Length - 1) {
-			return name + 1;
-		}
-		else {
-			return 0;
-		}
+	//for other classes to get the functions
+	public static Function GetFunction(FunctionName name) => functions[(int)name]; //cast bc enum cant implicitly cast to int
+
+	public static FunctionName GetNextFunctionName (FunctionName name) =>
+		(int)name < functions.Length - 1 ? name + 1 : 0;
+
+	public static int FunctionCount {
+		get => functions.Length;
 	}
 
 	public static FunctionName GetRandomFunctionNameOtherThan (FunctionName name) {
@@ -73,7 +74,7 @@ public static class FunctionLibrary
 	{
 		Vector3 p;
 
-		float r = 0.9f + 0.1f * Sin(PI * (6f * u + 4f * v + t));
+		float r = 0.9f + 0.1f * Sin(PI * (12f * u + 8f * v + t));
 		float s = r * Cos(0.5f * PI * v);
 
 		p.x = s * Sin(PI * u);
@@ -87,8 +88,8 @@ public static class FunctionLibrary
 	{
 		Vector3 p;
 
-		float r1 = 1f + 0.1f * Sin(PI * (6f * u + 0.5f * t)); //the major radius, radius of the whole thing
-		float r2 = 0.35f + 0.05f * Sin(PI * (8f * u + 4f * v + 2f * t)); //the minor radius, radius of the minor circle/sphere
+		float r1 = 1f + 0.1f * Sin(PI * (8f * u + 0.5f * t)); //the major radius, radius of the whole thing
+		float r2 = 0.35f + 0.05f * Sin(PI * (16f * u + 8f * v + 3f * t)); //the minor radius, radius of the minor circle/sphere
 		float s = r1 + r2 * Cos(PI * v);
 
 		p.x = s * Sin(PI * u);
@@ -104,9 +105,4 @@ public static class FunctionLibrary
 	public enum FunctionName { Wave, MultiWave, Ripple, Sphere, Torus } //enum for names of the functions
 
 	static Function[] functions = { Wave, MultiWave, Ripple, Sphere, Torus }; //list for the actual functions
-
-	public static Function GetFunction(FunctionName name) //for other classes to get the functions
-	{
-		return functions[(int)name]; //cast bc enum cant implicitly cast to int
-	}
 }

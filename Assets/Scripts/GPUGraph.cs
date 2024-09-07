@@ -38,7 +38,8 @@ public class GPUGraph : MonoBehaviour {
 		positionsId = Shader.PropertyToID("_Positions"),
 		resolutionId = Shader.PropertyToID("_Resolution"),
 		stepId = Shader.PropertyToID("_Step"),
-		timeId = Shader.PropertyToID("_Time");
+		timeId = Shader.PropertyToID("_Time"),
+		transitionProgressId = Shader.PropertyToID("_TransitionProgress");
 
 
 	void OnEnable()
@@ -88,12 +89,24 @@ public class GPUGraph : MonoBehaviour {
 
 	void UpdateFunctionOnGPU()
 	{
+		//Calculates step size, set resolution, and time properties for the compute shader
 		float step = 2f / resolution;
 		computeShader.SetInt(resolutionId, resolution);
 		computeShader.SetFloat(stepId, step);
 		computeShader.SetFloat(timeId, Time.time);
 
+		//for transitioning between functions andsetting kernel index
 		var kernelIndex = (int) function;
+
+		if (transitioning) {
+			computeShader.SetFloat(transitionProgressId, Mathf.SmoothStep(0f, 1f, duration / transitionDuration));
+			kernelIndex += (int)(transitionFunction) * FunctionLibrary.FunctionCount;;
+		}
+		else{
+			kernelIndex += (int)(function) * FunctionLibrary.FunctionCount;;
+		}
+
+		//Getting the current function with their kernel Index, setting buffer, then dispatch threads to draw them 
 		computeShader.SetBuffer(kernelIndex, positionsId, positionsBuffer);
 		
 		int groups = Mathf.CeilToInt(resolution / 8f);
@@ -103,6 +116,6 @@ public class GPUGraph : MonoBehaviour {
 		material.SetFloat(stepId, step);
 		
 		var bounds = new Bounds(Vector3.zero, Vector3.one * (2f + 2f / resolution));
-		Graphics.DrawMeshInstancedProcedural(mesh, 0, material, bounds, resolution * resolution);
+		Graphics.DrawMeshInstancedProcedural(mesh, 0, material, bounds, resolution * resolution); //DrawMeshInstance needs bound
 	}
 }
