@@ -2,40 +2,36 @@ using UnityEngine;
 
 public class Fractal : MonoBehaviour {
 
+    //how loopy do we want to go with the fractal
 	[SerializeField, Range(1, 8)]
 	int depth = 4;
 
-    void Start () {
-        name = "Fractal " + depth;
+    //materials and meshes for the fractal
+    [SerializeField]
+	Mesh mesh;
 
-        if (depth <= 1){
-            return;
-        }
+	[SerializeField]
+	Material material;
 
-        //To create two sets of child and offsetting them in a certain direction
-        Fractal childA = CreateChild(Vector3.up, Quaternion.identity);
-		Fractal childB = CreateChild(Vector3.right, Quaternion.Euler(0f, 0f, -90f));
-		Fractal childC = CreateChild(Vector3.left, Quaternion.Euler(0f, 0f, 90f));
-        Fractal childD = CreateChild(Vector3.forward, Quaternion.Euler(90f, 0f, 0f));
-		Fractal childE = CreateChild(Vector3.back, Quaternion.Euler(-90f, 0f, 0f));
-		
-		childA.transform.SetParent(transform, false);
-		childB.transform.SetParent(transform, false);
-		childC.transform.SetParent(transform, false);
-        childD.transform.SetParent(transform, false);
-		childE.transform.SetParent(transform, false);
+    //storing some variables for ease of use later when we're creating the fractal
+    static Vector3[] directions = {
+		Vector3.up, Vector3.right, Vector3.left, Vector3.forward, Vector3.back
+	};
+
+	static Quaternion[] rotations = {
+		Quaternion.identity,
+		Quaternion.Euler(0f, 0f, -90f), Quaternion.Euler(0f, 0f, 90f),
+		Quaternion.Euler(90f, 0f, 0f), Quaternion.Euler(-90f, 0f, 0f)
+	};
+
+    void Awake () {
+		CreatePart();
 	}
 
-    Fractal CreateChild (Vector3 direction, Quaternion rotation){
-		Fractal child = Instantiate(this);
-		child.depth = depth - 1;
-		child.transform.localPosition = 0.75f * direction;
-        child.transform.rotation = rotation;
-		child.transform.localScale = 0.5f * Vector3.one;
-		return child;
-	}
-
-    void Update () {
-		transform.Rotate(0f, 22.5f * Time.deltaTime, 0f);
-	}
+    void CreatePart() {
+        var go = new GameObject("Fractal Part"); //go short for gameObject
+		go.transform.SetParent(transform, false);
+        go.AddComponent<MeshFilter>().mesh = mesh;
+		go.AddComponent<MeshRenderer>().material = material;
+    }
 }
