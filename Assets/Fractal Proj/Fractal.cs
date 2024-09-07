@@ -43,9 +43,10 @@ public class Fractal : MonoBehaviour {
         }
 
         //creating the parts themselves
-		CreatePart(0, 0);
-
         float scale = 1f;
+		
+        CreatePart(0, 0, scale);
+
         for (int levelIndex = 1; levelIndex < parts.Length; levelIndex++) { //start at one cus we already created the first one
             scale *= 0.5f;
             FractalPart[] levelParts = parts[levelIndex];
