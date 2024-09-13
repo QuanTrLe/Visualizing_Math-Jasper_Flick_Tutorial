@@ -26,9 +26,8 @@ public class Fractal : MonoBehaviour {
 
     //for keeping track of all the fractal parts
     struct FractalPart {
-		public Vector3 direction;
-		public Quaternion rotation;
-        public Transform transform;
+		public Vector3 direction, worldPosition;
+		public Quaternion rotation, worldRotation;
 	}
     FractalPart[][] parts; //2D array for each depth level parts 
 
@@ -43,17 +42,14 @@ public class Fractal : MonoBehaviour {
         }
 
         //creating the parts themselves
-        float scale = 1f;
-		
-       parts[0][0] = CreatePart(0, 0, scale); //the first big part in the middle
+       parts[0][0] = CreatePart(0); //the first big part in the middle
 
         for (int levelIndex = 1; levelIndex < parts.Length; levelIndex++) { //start at one cus we already created the first one
-            scale *= 0.5f;
             FractalPart[] levelParts = parts[levelIndex];
 
             for (int fractalPartIndex = 0; fractalPartIndex < levelParts.Length; fractalPartIndex += 5) {
                 for (int childIndex = 0; childIndex < 5; childIndex++) {
-                    levelParts[fractalPartIndex + childIndex] = CreatePart(levelIndex, childIndex, scale);
+                    levelParts[fractalPartIndex + childIndex] = CreatePart(childIndex);
                 }
             }
         }
@@ -66,38 +62,33 @@ public class Fractal : MonoBehaviour {
         //rotating the root one first of all
         FractalPart rootPart = parts[0][0];
         rootPart.rotation *= deltaRotation;
-        rootPart.transform.localRotation = rootPart.rotation;
+        rootPart.worldRotation = rootPart.rotation;
         parts[0][0] = rootPart;
 
+        float scale = 1f;//scale for decreasing size
+
         for (int levelIndex = 1; levelIndex < parts.Length; levelIndex++) {
+            scale *= 0.5f;
+
             FractalPart[] parentParts = parts[levelIndex - 1];
             FractalPart[] levelParts = parts[levelIndex];
 
             for (int fractalPartIndex = 0; fractalPartIndex < levelParts.Length; fractalPartIndex++) {
-                Transform parentTransform = parentParts[fractalPartIndex / 5].transform;
+                FractalPart parent = parentParts[fractalPartIndex / 5];
                 FractalPart part = levelParts[fractalPartIndex];
 
                 part.rotation *= deltaRotation;
-                part.transform.localRotation = parentTransform.localRotation * part.rotation; 
-                part.transform.localPosition = parentTransform.localPosition +
-                    parentTransform.localRotation * (1.5f * part.transform.localScale.x * part.direction);
+                part.worldRotation = parent.worldRotation * part.rotation; 
+                part.worldPosition = parent.worldPosition +
+                    parent.worldRotation * (1.5f * scale * part.direction);
 
                 levelParts[fractalPartIndex] = part;
             }
         }
     }
 
-    FractalPart CreatePart(int levelIndex, int childIndex, float scale) {
-        var go = new GameObject("Fractal Part L" + levelIndex + " C" + childIndex); //go short for gameObject
-		go.transform.localScale = scale * Vector3.one;
-        go.transform.SetParent(transform, false);
-        go.AddComponent<MeshFilter>().mesh = mesh;
-		go.AddComponent<MeshRenderer>().material = material;
-
-        return new FractalPart {
-            direction = directions[childIndex],
-            rotation = rotations[childIndex],
-            transform = go.transform
-        };
-    }
+    FractalPart CreatePart(int childIndex) => new FractalPart{
+        direction = directions[childIndex],
+        rotation = rotations[childIndex]
+    };
 }
