@@ -45,7 +45,7 @@ public class Fractal : MonoBehaviour {
         //creating the parts themselves
         float scale = 1f;
 		
-        CreatePart(0, 0, scale);
+       parts[0][0] = CreatePart(0, 0, scale); //the first big part in the middle
 
         for (int levelIndex = 1; levelIndex < parts.Length; levelIndex++) { //start at one cus we already created the first one
             scale *= 0.5f;
@@ -53,17 +53,37 @@ public class Fractal : MonoBehaviour {
 
             for (int fractalPartIndex = 0; fractalPartIndex < levelParts.Length; fractalPartIndex += 5) {
                 for (int childIndex = 0; childIndex < 5; childIndex++) {
-                    CreatePart(levelIndex, childIndex, scale);
+                    levelParts[fractalPartIndex + childIndex] = CreatePart(levelIndex, childIndex, scale);
                 }
             }
         }
 	}
 
-    void CreatePart(int levelIndex, int childIndex, float scale) {
+    void Update() {
+        for (int levelIndex = 1; levelIndex < parts.Length; levelIndex++) {
+            FractalPart[] parentParts = parts[levelIndex - 1];
+            FractalPart[] levelParts = parts[levelIndex];
+            for (int fractalPartIndex = 0; fractalPartIndex < levelParts.Length; fractalPartIndex++) {
+                Transform parentTransform = parentParts[fractalPartIndex / 5].transform;
+                FractalPart part = levelParts[fractalPartIndex];
+                part.transform.localRotation = parentTransform.localRotation * part.rotation; 
+                part.transform.localPosition = parentTransform.localPosition +
+                    parentTransform.localRotation * (1.5f * part.transform.localScale.x * part.direction);
+            }
+        }
+    }
+
+    FractalPart CreatePart(int levelIndex, int childIndex, float scale) {
         var go = new GameObject("Fractal Part L" + levelIndex + " C" + childIndex); //go short for gameObject
 		go.transform.localScale = scale * Vector3.one;
         go.transform.SetParent(transform, false);
         go.AddComponent<MeshFilter>().mesh = mesh;
 		go.AddComponent<MeshRenderer>().material = material;
+
+        return new FractalPart {
+            direction = directions[childIndex],
+            rotation = rotations[childIndex],
+            transform = go.transform
+        };
     }
 }
