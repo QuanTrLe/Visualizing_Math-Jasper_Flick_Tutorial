@@ -109,7 +109,7 @@ public class Fractal : MonoBehaviour {
             parts[i] = new NativeArray<FractalPart>(length, Allocator.Persistent);
             matrices[i] = new NativeArray<float3x4>(length, Allocator.Persistent);
             matricesBuffers[i] = new ComputeBuffer(length, stride);
-            sequenceNumbers[i] = new Vector4(Random.value, Random.value);
+            sequenceNumbers[i] = new Vector4(Random.value, Random.value, Random.value, Random.value);
         }
 
         //creating the parts themselves
