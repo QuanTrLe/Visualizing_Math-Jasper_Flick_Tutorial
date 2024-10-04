@@ -42,8 +42,8 @@ public class Fractal : MonoBehaviour {
     }
 
     //how loopy do we want to go with the fractal
-	[SerializeField, Range(1, 8)]
-	int depth = 4;
+	[SerializeField, Range(2, 8)]
+	int depth = 6;
 
     //materials and meshes for the fractal
     [SerializeField]
@@ -51,6 +51,9 @@ public class Fractal : MonoBehaviour {
 
 	[SerializeField]
 	Material material;
+
+    [SerializeField]
+    Gradient gradient;
 
     //storing some variables for ease of use later when we're creating the fractal
     static float3[] directions = {
@@ -75,7 +78,10 @@ public class Fractal : MonoBehaviour {
 
     ComputeBuffer[] matricesBuffers;
 
-    static readonly int matricesId = Shader.PropertyToID("_Matrices");
+    static readonly int
+        baseColorId = Shader.PropertyToID("_BaseColor"),
+        matricesId = Shader.PropertyToID("_Matrices");
+
     static MaterialPropertyBlock propertyBlock;
 
     void OnEnable () {
@@ -165,9 +171,14 @@ public class Fractal : MonoBehaviour {
         var bounds = new Bounds(rootPart.worldPosition, 3f * objectScale * Vector3.one);
         for (int i = 0; i < matricesBuffers.Length; i++) {
 			ComputeBuffer buffer = matricesBuffers[i];
+
 			buffer.SetData(matrices[i]);
+            propertyBlock.SetColor(
+                baseColorId, gradient.Evaluate( i / (matricesBuffers.Length - 1f)));
 			propertyBlock.SetBuffer(matricesId, buffer);
-			Graphics.DrawMeshInstancedProcedural(mesh, 0, material, bounds, buffer.count, propertyBlock);
+
+			Graphics.DrawMeshInstancedProcedural(
+                mesh, 0, material, bounds, buffer.count, propertyBlock);
 		}
     }
 
