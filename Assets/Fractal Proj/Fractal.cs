@@ -54,9 +54,6 @@ public class Fractal : MonoBehaviour {
 	[SerializeField]
 	Material material;
 
-    [SerializeField]
-    Gradient gradient;
-
     //storing some variables for ease of use later when we're creating the fractal
     static float3[] directions = {
 		up(), right(), left(), forward(), back()
@@ -80,8 +77,12 @@ public class Fractal : MonoBehaviour {
 
     ComputeBuffer[] matricesBuffers;
 
+    [SerializeField]
+    Gradient gradientA, gradientB;
+
     static readonly int
-        baseColorId = Shader.PropertyToID("_BaseColor"),
+        colorAId = Shader.PropertyToID("_ColorA"),
+        colorBId = Shader.PropertyToID("_ColorB"),
         matricesId = Shader.PropertyToID("_Matrices"),
         sequenceNumbersId = Shader.PropertyToID("_SequenceNumbers");
 
@@ -182,8 +183,11 @@ public class Fractal : MonoBehaviour {
 			ComputeBuffer buffer = matricesBuffers[i];
 
 			buffer.SetData(matrices[i]);
-            propertyBlock.SetColor(
-                baseColorId, gradient.Evaluate( i / (matricesBuffers.Length - 1f)));
+
+            float gradientInterpolator = i / (matricesBuffers.Length - 1f);
+            propertyBlock.SetColor(colorAId, gradientA.Evaluate(gradientInterpolator));
+            propertyBlock.SetColor(colorBId, gradientB.Evaluate(gradientInterpolator));
+
 			propertyBlock.SetBuffer(matricesId, buffer);
             propertyBlock.SetVector(sequenceNumbersId, sequenceNumbers[i]);
 
