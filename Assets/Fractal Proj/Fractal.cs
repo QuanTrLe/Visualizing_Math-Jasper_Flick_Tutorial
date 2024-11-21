@@ -30,14 +30,33 @@ public class Fractal : MonoBehaviour {
             FractalPart parent = parents[i / 5];
             FractalPart part = parts[i];
 
-            part.spinAngle += spinAngleDelta;
-            part.worldRotation = mul(parent.worldRotation, 
+            part.spinAngle += spinAngleDelta; //for rotating the fractal
+
+            float3 upAxis = mul(mul(parent.worldRotation, part.rotation), up()); //for sagging parts
+            float3 sagAxis = cross(up(), upAxis);
+
+            float sagManitude = length(sagAxis);
+            quaternion baseRotation;
+
+            // if sagAxis > 0 then normalize it and sag it
+            if (sagManitude > 0f) {
+                sagAxis /= sagManitude; //normalizing if length > 0
+                quaternion sagRotation = quaternion.AxisAngle(sagAxis, PI * 0.25f); //rotation of 45deg
+                baseRotation = mul(sagRotation, parent.worldRotation); //not relying on parent
+            }
+            else {
+                baseRotation = parent.worldRotation;
+            }
+
+            //deciding on the rotation and position, as well as applying sagging here
+            part.worldRotation = mul(baseRotation, 
                 mul(part.rotation, quaternion.RotateY(part.spinAngle)));
             part.worldPosition = parent.worldPosition +
-                mul(parent.worldRotation, (1.5f * scale * part.direction));
+                mul(part.worldRotation, float3(0f, 1.5f * scale, 0f)); //only rotating w/ local up axis
 
             parts[i] = part;
 
+            //comment here about the mtrices
             float3x3 r = float3x3(part.worldRotation) * scale;
             matrices[i] = float3x4(r.c0, r.c1, r.c2, part.worldPosition);
         }
@@ -150,6 +169,7 @@ public class Fractal : MonoBehaviour {
 
     void Update() {
         //the rotation speed
+        //float spinAngleDelta = 0.125f * PI * Time.deltaTime * 0f;
         float spinAngleDelta = 0.125f * PI * Time.deltaTime;
 
         //rotating the root one first of all
