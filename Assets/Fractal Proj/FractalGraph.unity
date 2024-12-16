@@ -228,7 +228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cd85e6526141774d9eb4e34260a88c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  depth: 7
+  depth: 8
   mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   leafMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   material: {fileID: 2100000, guid: dc86b42d9725efb428e64f4fab82f301, type: 2}
@@ -292,6 +292,11 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   leafColorA: {r: 1, g: 0.98599774, b: 0, a: 0.5019608}
   leafColorB: {r: 0, g: 1, b: 0.11217904, a: 0.9019608}
+  maxSagAngleA: 15
+  maxSagAngleB: 25
+  spinSpeedA: 20
+  spinSpeedB: 25
+  reverseSpinChance: 0.25
 --- !u!4 &319886045
 Transform:
   m_ObjectHideFlags: 0

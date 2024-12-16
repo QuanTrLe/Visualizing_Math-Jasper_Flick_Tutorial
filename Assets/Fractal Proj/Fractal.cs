@@ -16,7 +16,7 @@ public class Fractal : MonoBehaviour {
 
     [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
     struct UpdateFractalLevelJob : IJobFor {
-        public float spinAngleDelta;
+        public float deltaTime;
 		public float scale;
 
         [ReadOnly]
@@ -30,18 +30,19 @@ public class Fractal : MonoBehaviour {
             FractalPart parent = parents[i / 5];
             FractalPart part = parts[i];
 
-            part.spinAngle += spinAngleDelta; //for rotating the fractal
+            part.spinAngle += part.spinVelocity * deltaTime; //for rotating the fractal
 
             float3 upAxis = mul(mul(parent.worldRotation, part.rotation), up()); //for sagging parts
             float3 sagAxis = cross(up(), upAxis);
 
-            float sagManitude = length(sagAxis);
+            float sagMagnitude = length(sagAxis);
             quaternion baseRotation;
 
             // if sagAxis > 0 then normalize it and sag it
-            if (sagManitude > 0f) {
-                sagAxis /= sagManitude; //normalizing if length > 0
-                quaternion sagRotation = quaternion.AxisAngle(sagAxis, PI * 0.25f); //rotation of 45deg
+            if (sagMagnitude > 0f) {
+                sagAxis /= sagMagnitude; //normalizing if length > 0
+                quaternion sagRotation = 
+                    quaternion.AxisAngle(sagAxis, part.maxSagAngle * sagMagnitude); //rotation of 45deg
                 baseRotation = mul(sagRotation, parent.worldRotation); //not relying on parent
             }
             else {
@@ -88,7 +89,7 @@ public class Fractal : MonoBehaviour {
     struct FractalPart {
 		public float3 direction, worldPosition;
 		public quaternion rotation, worldRotation;
-        public float spinAngle;
+        public float spinAngle, maxSagAngle, spinVelocity;
 	}
     NativeArray<FractalPart>[] parts; //For each depth level parts
 
@@ -101,6 +102,15 @@ public class Fractal : MonoBehaviour {
 
     [SerializeField]
     Color leafColorA, leafColorB;
+
+    [SerializeField, Range(0f, 90f)]
+    float maxSagAngleA = 15f, maxSagAngleB = 25f;
+
+    [SerializeField, Range(0f, 90f)]
+	float spinSpeedA = 20f, spinSpeedB = 25f;
+
+    [SerializeField, Range(0f, 1f)]
+	float reverseSpinChance = 0.25f;
 
     static readonly int
         colorAId = Shader.PropertyToID("_ColorA"),
@@ -169,12 +179,11 @@ public class Fractal : MonoBehaviour {
 
     void Update() {
         //the rotation speed
-        //float spinAngleDelta = 0.125f * PI * Time.deltaTime * 0f;
-        float spinAngleDelta = 0.125f * PI * Time.deltaTime;
+        float deltaTime = Time.deltaTime;
 
         //rotating the root one first of all
         FractalPart rootPart = parts[0][0];
-        rootPart.spinAngle += spinAngleDelta;
+        rootPart.spinAngle += rootPart.spinVelocity * deltaTime;
         rootPart.worldRotation = mul(transform.rotation,
             mul(rootPart.rotation, quaternion.RotateY(rootPart.spinAngle)));
         rootPart.worldPosition = transform.position;
@@ -192,7 +201,7 @@ public class Fractal : MonoBehaviour {
 
             //Creating a new UpdateFractalLevelJob and setting all its values
             jobHandle = new UpdateFractalLevelJob {
-				spinAngleDelta = spinAngleDelta,
+				deltaTime = deltaTime,
 				scale = scale,
 				parents = parts[levelIndex - 1],
 				parts = parts[levelIndex],
@@ -234,6 +243,9 @@ public class Fractal : MonoBehaviour {
 
     FractalPart CreatePart(int childIndex) => new FractalPart{
         direction = directions[childIndex],
-        rotation = rotations[childIndex]
+        rotation = rotations[childIndex],
+        maxSagAngle = radians(Random.Range(maxSagAngleA, maxSagAngleB)),
+        spinVelocity = (Random.value < reverseSpinChance ? -1f : 1f) * 
+            radians(Random.Range(spinSpeedA, spinSpeedB))
     };
 }
